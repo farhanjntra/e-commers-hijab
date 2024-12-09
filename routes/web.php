@@ -57,3 +57,10 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 Route::get('/checkout/success/{id}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 
+use App\Http\Controllers\AdminOrderController;
+
+// Admin Order Routes
+Route::get('/admin/orders', [AdminOrderController::class, 'index'])->middleware('admin')->name('admin.orders.index'); // Daftar pesanan
+Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->middleware('admin')->name('admin.orders.show'); // Detail pesanan
+Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->middleware('admin')->name('admin.orders.update'); // Update status pesanan
+Route::post('admin/orders/{id}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');

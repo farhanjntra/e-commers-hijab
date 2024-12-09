@@ -85,7 +85,7 @@
                         <li><a href="javascript:;"><i class="la la-users"></i>Old Customers</a></li>
                     </ul> -->
             </li>
-            <li><a href="javascript:;" class="waves-effect waves-primary"><i
+            <li><a href="{{ url('admin/orders') }}" class="waves-effect waves-primary"><i
                             class="la la-cart-arrow-down"></i>Orders</a></li>
             <li><a href="javascript:;" class="waves-effect waves-primary"><i
                             class="la la-wechat"></i>Messages</a></li>
