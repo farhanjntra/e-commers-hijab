@@ -6,7 +6,7 @@
         {{-- <h2 class="text-center mb-5 text-main">Lihat Semua</h2> --}}
         <div class="text-products row align-items-center mb-4">
             <div class="title-product col-12 col-sm-6 col-md-9">
-                <h2 class="text-main font-weight-bold">NEW ARRIVAL</h2>
+                <h2 class="text-main font-weight-bold">ALL Product</h2>
             </div>
         </div>
         <div class="products row justify-content-center">

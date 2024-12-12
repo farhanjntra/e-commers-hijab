@@ -2,7 +2,7 @@
 @section('content')
 
 <!-- BANNER -->
-<section class="banner" style="position: relative; background-image: url('{{ asset('images/hijaab.JPG') }}'); background-size: cover; background-position: center; height: 80vh; display: flex; align-items: center;">
+<section class="banner" style="position: relative; background-image: url('{{ asset('images/hijaab.JPG') }}'); background-size: cover; background-position: center; height: 100vh; display: flex; align-items: center;">
     <!-- Overlay untuk membuat teks lebih jelas -->
     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1;"></div>
 
@@ -33,12 +33,23 @@
             </div>
         </div>
 
-        <div class="arrival-images row justify-content-center align-items-center text-center">
-            @foreach ($datas->skip(1) as $item)
-                <div class="arrival-image col-12 mb-4 mb-sm-0 mb-md-4 mb-lg-0 col-sm-12 col-md-6 col-lg-4" data-aos="fade-up">
-                    <a href="/detail/{{ $item->id }}">
-                        <img src="{{ Storage::url($item->url_gambar) }}" alt="prod1" class="img-fluid">
-                    </a>
+        <div class="products row justify-content-center">
+            @foreach ($datas as $item)
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
+                        <div class="card-body text-center p-4">
+                            <div class="product-image mb-3">
+                                @if($item->url_gambar)
+                                    <img src="{{ Storage::url($item->url_gambar) }}" alt="{{ $item->nama_produk }}" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;">
+                                @else
+                                    <img src="{{ asset('images/hijab.png') }}" alt="Default Image" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;">
+                                @endif
+                            </div>
+                            <h5 class="text-second mb-2">{{ $item->nama_produk }}</h5>
+                            <p class="text-main font-weight-bold mb-3">Rp {{ number_format($item->harga, 2, ',', '.') }}</p>
+                            <a href="/detail/{{ $item->id }}" class="btn btn-info">View Details</a>
+                        </div>
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -48,9 +59,9 @@
 <!-- PRODUCTS -->
 <section class="products-section">
     <div class="container">
-        <div class="text-products row align-items-center">
-            <div class="title-product col-7 col-sm-6 col-md-9">
-                <h2 class="text-main">ALL PRODUCTS</h2>
+        <div class="text-arrivals row align-items-center mb-4">
+            <div class="title col-7 col-sm-6 col-md-9 text-left">
+                <h3 class="text-main"><span>ALL</span> PRODUCT</h3>
             </div>
             <div class="text-show-all text-right text-main col-5 col-sm-6 col-md-3 pr-md-0">
                 <a href={{ url('allproduk') }}>
@@ -61,17 +72,19 @@
 
         <div class="products row justify-content-center">
             @foreach ($datas as $item)
-                <div class="product col-12 col-sm-12 col-md-6 col-lg-3 mb-md-4 md-lg-0" data-aos="fade-up">
-                    <div class="card text-center shadow-sm rounded">
-                        @if($item->url_gambar)
-                            <img src="{{ Storage::url($item->url_gambar) }}" class="card-img-top rounded-top" alt="{{ $item->nama_produk }}">
-                        @else
-                            <img src="{{ asset('images/hijab.png') }}" class="card-img-top rounded-top" alt="Default Image">
-                        @endif
-                        <div class="card-body">
-                            <h5 class="card-title fw-bold">{{ $item->nama_produk }}</h5>
-                            <p class="card-text text-muted">Rp {{ number_format($item->harga, 2, ',', '.') }}</p>
-                            <a href="/detail/{{ $item->id }}" class="btn btn-info text-white">View Details</a>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                    <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
+                        <div class="card-body text-center p-4">
+                            <div class="product-image mb-3">
+                                @if($item->url_gambar)
+                                    <img src="{{ Storage::url($item->url_gambar) }}" alt="{{ $item->nama_produk }}" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;">
+                                @else
+                                    <img src="{{ asset('images/hijab.png') }}" alt="Default Image" class="img-fluid rounded" style="max-height: 180px; object-fit: cover;">
+                                @endif
+                            </div>
+                            <h5 class="text-second mb-2">{{ $item->nama_produk }}</h5>
+                            <p class="text-main font-weight-bold mb-3">Rp {{ number_format($item->harga, 2, ',', '.') }}</p>
+                            <a href="/detail/{{ $item->id }}" class="btn btn-info">View Details</a>
                         </div>
                     </div>
                 </div>

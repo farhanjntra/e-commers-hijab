@@ -122,48 +122,79 @@
         }
     </style>
 
-    <main class="main">
-        <div class="mainWrapper">
-            <div class="productCard_block">
-                <!-- Left Section: Image -->
-                <div class="productCard_leftSide">
-                    <img src="{{ Storage::url($data->url_gambar) }}" alt="Product Image">
-                </div>
-                <!-- Right Section: Information -->
-                <div class="productCard_rightSide">
-                    <h2 class="block_name">Product Information</h2>
-                    <table class="product-table">
-                        <tr>
-                            <th>Product Name</th>
-                            <td>{{ $data->nama_produk }}</td>
-                        </tr>
-                        <tr>
-                            <th>Description</th>
-                            <td>
-                                <div class="product-description">
-                                    {{ $data->deskripsi }}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Stock</th>
-                            <td>{{ $stok }} units</td>
-                        </tr>
-                        <tr>
-                            <th>Price</th>
-                            <td>Rp. {{ number_format($data->harga, 2, ',', '.') }}</td>
-                        </tr>
-                    </table>
-                    <div class="button-container">
+<main class="main">
+    <div class="mainWrapper">
+        <div class="productCard_block">
+            <!-- Left Section: Image -->
+            <div class="productCard_leftSide">
+                <img src="{{ Storage::url($data->url_gambar) }}" alt="Product Image">
+            </div>
+            <!-- Right Section: Information -->
+            <div class="productCard_rightSide">
+                <h2 class="block_name">Product Information</h2>
+                <table class="product-table">
+                    <tr>
+                        <th>Product Name</th>
+                        <td>{{ $data->nama_produk }}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>
+                            <div class="product-description">
+                                {{ $data->deskripsi }}
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Stock</th>
+                        <td>{{ $stok }} units</td>
+                    </tr>
+                    <tr>
+                        <th>Price</th>
+                        <td>Rp. {{ number_format($data->harga, 2, ',', '.') }}</td>
+                    </tr>
+                </table>
+                <div class="button-container">
+                    @auth
+                        <!-- If the user is logged in -->
                         <button class="button_addToCard" onclick="addToCart({{ $data->id }})">Add to Cart</button>
-                    </div>
+                    @else
+                        <!-- If the user is not logged in -->
+                        <button class="button_addToCard" onclick="showLoginNotification()">Add to Cart</button>
+                    @endauth
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Notifikasi Cart -->
-        <div id="cart-notification"></div>
-    </main>
+    <!-- Notifikasi Cart -->
+    <div id="cart-notification" style="display:none;"></div>
+</main>
+
+<!-- JavaScript -->
+<script>
+    // Menampilkan notifikasi jika pengguna belum login
+    function showLoginNotification() {
+        const notification = document.getElementById('cart-notification');
+        notification.style.display = 'block'; // Menampilkan notifikasi
+        notification.innerHTML = `
+            <div class="alert alert-warning">
+                <strong>Warning!</strong> You need to log in to add items to the cart.
+            </div>
+        `;
+        // Menyembunyikan notifikasi setelah beberapa detik
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000); // Menyembunyikan setelah 5 detik
+    }
+
+    // Fungsi untuk menambah barang ke keranjang (masih perlu implementasi)
+    function addToCart(productId) {
+        // Implementasikan fungsi untuk menambahkan barang ke keranjang
+        console.log('Item added to cart', productId);
+    }
+</script>
+
 
     <script>
         // Fungsi untuk menampilkan notifikasi

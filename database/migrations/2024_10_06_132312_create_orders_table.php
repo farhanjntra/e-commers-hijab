@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id('id_order');
-            $table->string('nama_pembeli',100);
+            $table->string('nama_pembeli', 100);
             $table->text('alamat_pembeli')->nullable();
             $table->timestamp('tanggal_pembelian')->useCurrent();
-            $table->decimal('total_harga',10,2);
-            $table->string('status',20);
+            $table->decimal('total_harga', 10, 2);
+            $table->string('status', 20);
+            $table->string('bukti_pembayaran', 255)->nullable(); 
+            $table->decimal('ongkir', 10, 2)->nullable();
             $table->timestamps();
         });
     }

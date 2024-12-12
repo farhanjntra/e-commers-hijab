@@ -37,6 +37,7 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink
 Route::resource('admin/barang', BarangController::class)->middleware('auth'); // Tambahkan middleware auth jika dibutuhkan
 Route::resource('admin/kategori', KategoriController::class)->middleware('auth');
 
+
 // Keranjang Routes
 Route::get('/keranjangku', [KeranjangController::class, 'index'])->name('keranjang.index');
 Route::get('tambah_keranjang/{id}', [KeranjangController::class, 'tambahKeranjang'])->name('keranjang.tambah')->middleware('auth');
@@ -64,3 +65,4 @@ Route::get('/admin/orders', [AdminOrderController::class, 'index'])->middleware(
 Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->middleware('admin')->name('admin.orders.show'); // Detail pesanan
 Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->middleware('admin')->name('admin.orders.update'); // Update status pesanan
 Route::post('admin/orders/{id}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
+

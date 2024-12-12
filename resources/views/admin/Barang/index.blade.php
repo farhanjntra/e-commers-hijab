@@ -28,7 +28,9 @@
                     <tr>
                         <td>
                             @if ($barang->url_gambar)
+                            <a href="{{ Storage::url($barang->url_gambar) }}">
                                 <img src="{{ Storage::url($barang->url_gambar) }}" alt="{{ $barang->nama_produk }}" width="100">
+                            </a>
                             @else
                                 <img src="{{ asset('images/default.jpg') }}" alt="Default Image" width="100">
                             @endif

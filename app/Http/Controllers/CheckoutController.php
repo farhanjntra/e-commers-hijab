@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Keranjang;
@@ -59,6 +60,7 @@ class CheckoutController extends Controller
             'tanggal_pembelian' => now(),
             'total_harga' => $totalHarga,
             'status' => 'pending', // Status default
+            'bukti_pembayaran' => null, // Tambahkan nilai default untuk bukti_pembayaran
         ]);
 
         // Simpan item keranjang ke dalam detail order
