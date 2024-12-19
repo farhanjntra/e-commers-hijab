@@ -9,9 +9,10 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserStatusController;
 
 // Landing Page Routes
-Route::get('/', [LandingController::class, 'index']);
+Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/admin', [LandingController::class, 'admin'])->middleware('admin')->name('admin.dashboard');
 Route::get('/seller', [LandingController::class, 'bestSeller']);
 Route::get('/new-arrival', [LandingController::class, 'newArrival']);
@@ -65,4 +66,8 @@ Route::get('/admin/orders', [AdminOrderController::class, 'index'])->middleware(
 Route::get('/admin/orders/{order}', [AdminOrderController::class, 'show'])->middleware('admin')->name('admin.orders.show'); // Detail pesanan
 Route::put('/admin/orders/{order}', [AdminOrderController::class, 'update'])->middleware('admin')->name('admin.orders.update'); // Update status pesanan
 Route::post('admin/orders/{id}/update-status', [AdminOrderController::class, 'updateStatus'])->name('admin.orders.update-status');
-
+Route::get('/status-pesanan', [UserStatusController::class, 'index'])
+    ->middleware('auth')
+    ->name('user.orders.index');
+//laporan
+Route::get('/barang/laporan', [BarangController::class, 'laporan'])->name('barang.laporan');

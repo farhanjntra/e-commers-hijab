@@ -4,20 +4,28 @@
 <div class="container">
     <h1 class="text-center mb-4">Daftar Pesanan</h1>
 
-    <!-- Menampilkan pesan error jika tidak ada pesanan -->
-    @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
+    <!-- Notifikasi jumlah pesanan baru -->
+    @if(session('new_order_count') && session('new_order_count') > 0)
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            <strong>Notifikasi!</strong> Ada {{ session('new_order_count') }} pesanan baru yang belum diproses.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     @endif
 
-    <!-- Menampilkan pesan sukses jika status diperbarui -->
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
+    <!-- Filter Urutan Pesanan -->
+    <div class="mb-3">
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="form-inline">
+            <label for="sort" class="mr-2">Urutkan Berdasarkan:</label>
+            <select name="sort" id="sort" class="form-control form-control-sm mr-2" onchange="this.form.submit()">
+                <option value="desc" {{ $sortOrder == 'desc' ? 'selected' : '' }}>Terbaru</option>
+                <option value="asc" {{ $sortOrder == 'asc' ? 'selected' : '' }}>Terlama</option>
+            </select>
+        </form>
+    </div>
 
+    <!-- Tabel Pesanan -->
     <div class="table-responsive">
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
@@ -28,6 +36,7 @@
                     <th>Tanggal Pembelian</th>
                     <th>Total Harga</th>
                     <th>Status</th>
+                    <th>Bukti Transfer</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -40,32 +49,29 @@
                     <td>{{ \Carbon\Carbon::parse($order->tanggal_pembelian)->format('d-m-Y') }}</td>
                     <td>Rp {{ number_format($order->total_harga, 2, ',', '.') }}</td>
                     <td>
-                        {{-- @if ($order->status == 'pending')
-                            <span class="btn btn-danger">Pending</span>
-                        @elseif ($order->status == 'processed')
-                            <span class="btn btn-danger">Proses</span>
-                        @else
-                            <span class="btn btn-danger">Complate</span>
-                        @endif --}}
-                        <span
-                            class="btn btn-sm d-flex justify-content-center
-                                {{
-                                    $order->status == 'pending'
-                                        ? 'btn-danger la la-exclamation-triangle'
-                                        : ($order->status == 'completed'
-                                            ? 'btn-success la la-check'
-                                            : 'btn-info la la-spinner')
-                                }}">
-                            {{-- {{ ucfirst($order->status) }} --}}
+                        <span class="btn btn-sm d-flex justify-content-center {{
+                                $order->status == 'pending' ? 'btn-danger la la-exclamation-triangle' :
+                                ($order->status == 'completed' ? 'btn-success la la-check' : 'btn-info la la-spinner')
+                            }}">
                         </span>
-
                     </td>
                     <td>
+                        @if($order->bukti_pembayaran)
+                            <a href="{{ asset('storage/uploads/bukti_pembayaran/' . $order->bukti_pembayaran) }}" target="_blank">
+                                <img src="{{ asset('storage/uploads/bukti_pembayaran/' . $order->bukti_pembayaran) }}" alt="Bukti Transfer" style="width: 100px; height: auto;">
+                            </a>
+                        @else
+                            <span class="text-muted">Belum ada bukti</span>
+                        @endif
+                    </td>
+                    <td>
+                        <!-- Tombol untuk memproses pesanan -->
                         <form action="{{ route('admin.orders.update-status', $order->id_order) }}" method="POST" class="d-inline">
                             @csrf
                             <input type="hidden" name="status" value="processed">
                             <button type="submit" class="btn btn-warning btn-sm" {{ $order->status !== 'pending' ? 'disabled' : '' }}>Proses</button>
                         </form>
+                        <!-- Tombol untuk menyelesaikan pesanan -->
                         <form action="{{ route('admin.orders.update-status', $order->id_order) }}" method="POST" class="d-inline">
                             @csrf
                             <input type="hidden" name="status" value="completed">
@@ -75,7 +81,7 @@
                 </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center">Tidak ada pesanan yang ditemukan.</td>
+                        <td colspan="8" class="text-center">Tidak ada pesanan yang ditemukan.</td>
                     </tr>
                 @endforelse
             </tbody>
@@ -83,7 +89,3 @@
     </div>
 </div>
 @endsection
-
-@push('styles')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
-@endpush

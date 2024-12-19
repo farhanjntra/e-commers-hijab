@@ -81,6 +81,7 @@
                     <li class="nav-item"><a class="nav-link" href="/seller">Best Seller</a></li>
                 </ul>
                 <div class="d-flex align-items-center ms-auto">
+                    <!-- Search Form -->
                     <div class="search-container me-3">
                         <form method="GET" action="{{ url('/allproduk') }}" class="d-flex align-items-center">
                             <input type="search" name="q" class="form-control" placeholder="Search products..." value="{{ request('q') }}" style="height: 30px; font-size: 14px; padding: 0 8px;">
@@ -89,6 +90,8 @@
                             </button>
                         </form>
                     </div>
+
+                    <!-- User Icon -->
                     <div class="icon-for-user d-flex align-items-center ms-3">
                         <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i>
@@ -108,10 +111,19 @@
                             </ul>
                         @endif
                     </div>
-                    <a href="{{ url('keranjangku') }}" class="ms-3 text-dark">
-                        <i class="bi bi-cart"></i>
-                    </a>
+
+                    <!-- New Message Icon -->
+                    <!-- Message Icon -->
+    <a href="{{ url('status-pesanan') }}" class="text-dark ms-3" title="Order Status" style="margin-right: 15px;">
+        <i class="bi bi-envelope"></i>
+    </a>
+    <!-- Cart Icon -->
+    <a href="{{ url('keranjangku') }}" class="text-dark" title="My Cart" style="margin-left: 15px;">
+        <i class="bi bi-cart"></i>
+    </a>
+
                 </div>
+
             </div>
         </div>
     </nav>

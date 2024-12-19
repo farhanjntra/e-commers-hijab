@@ -6,22 +6,23 @@ use App\Models\Keranjang;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CheckoutController extends Controller
 {
     // Menampilkan halaman checkout
     public function showCheckoutForm()
     {
-        // Ambil data keranjang milik user yang sedang login
         $user = Auth::user();
+
+        // Ambil item keranjang milik user
         $keranjangItems = Keranjang::where('user_id', $user->id)->with('barang')->get();
 
-        // Periksa apakah keranjang kosong
         if ($keranjangItems->isEmpty()) {
             return redirect()->route('keranjang.index')->with('error', 'Keranjang Anda kosong!');
         }
 
-        // Hitung total harga berdasarkan item di keranjang
+        // Hitung total harga
         $totalHarga = $keranjangItems->sum(function ($item) {
             return $item->barang->harga * $item->jumlah;
         });
@@ -32,69 +33,79 @@ class CheckoutController extends Controller
     // Proses checkout
     public function store(Request $request)
     {
-        // Validasi input dari form
+        // Validasi input
         $request->validate([
-            'nama_pembeli' => 'required|string|max:255',
-            'alamat_pembeli' => 'required|string|max:255',
+            'nama_pembeli'     => 'required|string|max:255',
+            'alamat_pembeli'   => 'required|string|max:255',
+            'bukti_pembayaran' => 'required|file|mimes:jpeg,png,jpg,pdf|max:2048', // File bukti pembayaran
         ]);
 
         $user = Auth::user();
 
-        // Ambil item keranjang milik user yang sedang login
+        // Ambil item keranjang user
         $keranjangItems = Keranjang::where('user_id', $user->id)->with('barang')->get();
 
-        // Periksa apakah keranjang kosong
         if ($keranjangItems->isEmpty()) {
             return redirect()->back()->with('error', 'Keranjang Anda kosong!');
         }
 
-        // Hitung total harga berdasarkan data di keranjang
+        // Hitung total harga
         $totalHarga = $keranjangItems->sum(function ($item) {
             return $item->barang->harga * $item->jumlah;
         });
 
-        // Simpan data order
+        // Proses upload file bukti pembayaran
+        $fileName = null;
+        if ($request->hasFile('bukti_pembayaran')) {
+            $file = $request->file('bukti_pembayaran');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('uploads/bukti_pembayaran', $fileName, 'public'); // Simpan ke penyimpanan publik
+        }
+
+        // Simpan order ke database
         $order = Order::create([
-            'nama_pembeli' => $request->input('nama_pembeli'),
-            'alamat_pembeli' => $request->input('alamat_pembeli'),
+            'nama_pembeli'      => $request->input('nama_pembeli'),
+            'alamat_pembeli'    => $request->input('alamat_pembeli'),
             'tanggal_pembelian' => now(),
-            'total_harga' => $totalHarga,
-            'status' => 'pending', // Status default
-            'bukti_pembayaran' => null, // Tambahkan nilai default untuk bukti_pembayaran
+            'total_harga'       => $totalHarga,
+            'status'            => 'pending',
+            'bukti_pembayaran'  => $fileName,
+            'items'             => json_encode($keranjangItems->map(function ($item) {
+                return [
+                    'produk_id' => $item->barang->id,
+                    'jumlah'    => $item->jumlah,
+                    'harga'     => $item->barang->harga,
+                ];
+            })),
         ]);
 
-        // Simpan item keranjang ke dalam detail order
-        $items = $keranjangItems->map(function ($item) {
-            return [
-                'produk_id' => $item->barang->id,
-                'jumlah' => $item->jumlah,
-                'harga' => $item->barang->harga,
-            ];
-        })->toArray();  // Convert to array
+        // Debug: Pastikan ID order tidak null
+        // $orders = Order::all();
+        // dd($order->id_order);
 
-        // Simpan items ke kolom JSON di tabel order
-        $order->items = $items;
-        $order->save();
+        if (!$order) {
+            return redirect()->back()->with('error', 'Gagal menyimpan pesanan. Silakan coba lagi.');
+        }
 
-        // Hapus data keranjang setelah checkout
+        // Hapus data keranjang setelah checkout berhasil
         Keranjang::where('user_id', $user->id)->delete();
 
-        // Redirect ke halaman success checkout dengan ID pesanan
-        return redirect()->route('checkout.success', ['id' => $order->id])->with('success', 'Pesanan berhasil dibuat!');
+        // Redirect ke halaman success
+        return redirect()->route('checkout.success', ['id' => $order->id_order])
+                         ->with('success', 'Pesanan berhasil dibuat!');
     }
 
-    // Menampilkan halaman sukses setelah checkout
+    // Menampilkan halaman sukses
     public function success($id)
     {
         // Ambil data order berdasarkan ID
         $order = Order::find($id);
 
-        // Pastikan order ditemukan
+        // Jika order tidak ditemukan
         if (!$order) {
             return redirect()->route('keranjang.index')->with('error', 'Pesanan tidak ditemukan!');
         }
 
-        // Tampilkan halaman success dengan data order
         return view('user.checkout.success', compact('order'));
     }
 }

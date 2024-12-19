@@ -2,31 +2,40 @@
 
 @section('content')
     <style>
-        /* Styling untuk notifikasi */
+        /* Styling untuk Notifikasi Popup */
         #cart-notification {
-            color: green;
-            display: none;
-            font-size: 14px;
-            margin-top: 10px;
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 9999;
             background-color: #28a745;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+            font-size: 14px;
+            animation: fadeInOut 3s forwards;
         }
 
+        /* Animasi Fade In dan Out */
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            10%, 90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+
+        /* Wrapper Utama */
         .mainWrapper {
             padding: 20px;
             background-color: #f9f9f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 90vh;
+            min-height: 90vh;
         }
 
+        /* Kartu Produk */
         .productCard_block {
             display: flex;
             background-color: #fff;
@@ -36,28 +45,25 @@
             max-width: 1200px;
             width: 100%;
             gap: 20px;
-        }
-
-        .productCard_leftSide {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            flex-wrap: wrap;
         }
 
         .productCard_leftSide img {
-            max-width: 100%;
+            max-width: 50%;  /* Ubah ukuran gambar menjadi 50% */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            object-fit: cover; /* Pastikan gambar tetap proporsional */
         }
 
         .productCard_rightSide {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            gap: 15px;
         }
 
+        /* Nama Produk */
         .block_name {
             font-size: 28px;
             font-weight: bold;
@@ -65,6 +71,7 @@
             color: #333;
         }
 
+        /* Tabel Informasi */
         .product-table {
             width: 100%;
             margin: 20px 0;
@@ -85,30 +92,28 @@
             font-weight: bold;
         }
 
-        .product-table td {
-            background-color: #fff;
-        }
-
+        /* Deskripsi Produk */
         .product-description {
-            max-height: 300px;
-            overflow-y: auto;
+            max-height: 200px;  /* Membatasi tinggi deskripsi */
+            overflow-y: auto;   /* Menambahkan scrollbar jika konten lebih panjang */
             padding: 10px;
-            margin-top: 10px;
             background-color: #f5f5f5;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             font-size: 14px;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
+        /* Tombol Container */
         .button-container {
             margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
         }
 
-        .button_addToCard {
-            background-color: #28a745;
-            color: #fff;
-            border: none;
+        /* Tombol Add to Cart dan Buy */
+        .button_addToCard, .button_buyNow {
             padding: 12px 24px;
             font-size: 18px;
             font-weight: bold;
@@ -117,98 +122,96 @@
             transition: background-color 0.3s ease;
         }
 
+        .button_addToCard {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+
         .button_addToCard:hover {
             background-color: #218838;
         }
+
+        .button_buyNow {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        .button_buyNow:hover {
+            background-color: #0056b3;
+        }
     </style>
 
-<main class="main">
-    <div class="mainWrapper">
-        <div class="productCard_block">
-            <!-- Left Section: Image -->
-            <div class="productCard_leftSide">
-                <img src="{{ Storage::url($data->url_gambar) }}" alt="Product Image">
-            </div>
-            <!-- Right Section: Information -->
-            <div class="productCard_rightSide">
-                <h2 class="block_name">Product Information</h2>
-                <table class="product-table">
-                    <tr>
-                        <th>Product Name</th>
-                        <td>{{ $data->nama_produk }}</td>
-                    </tr>
-                    <tr>
-                        <th>Description</th>
-                        <td>
-                            <div class="product-description">
-                                {{ $data->deskripsi }}
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>Stock</th>
-                        <td>{{ $stok }} units</td>
-                    </tr>
-                    <tr>
-                        <th>Price</th>
-                        <td>Rp. {{ number_format($data->harga, 2, ',', '.') }}</td>
-                    </tr>
-                </table>
-                <div class="button-container">
-                    @auth
-                        <!-- If the user is logged in -->
-                        <button class="button_addToCard" onclick="addToCart({{ $data->id }})">Add to Cart</button>
-                    @else
-                        <!-- If the user is not logged in -->
-                        <button class="button_addToCard" onclick="showLoginNotification()">Add to Cart</button>
-                    @endauth
+    <main class="main">
+        <div class="mainWrapper">
+            <div class="productCard_block">
+                <!-- Left Section: Image -->
+                <div class="productCard_leftSide">
+                    <img src="{{ Storage::url($data->url_gambar) }}" alt="Product Image">
+                </div>
+                <!-- Right Section: Information -->
+                <div class="productCard_rightSide">
+                    <h2 class="block_name">{{ $data->nama_produk }}</h2>
+                    <table class="product-table">
+                        <tr>
+                            <th>Description</th>
+                            <td>
+                                <div class="product-description">
+                                    {{ $data->deskripsi }}
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Stock</th>
+                            <td>{{ $stok }} pcs</td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td>Rp. {{ number_format($data->harga, 2, ',', '.') }}</td>
+                        </tr>
+                    </table>
+                    <div class="button-container">
+                        @auth
+                            <!-- Tombol Add to Cart -->
+                            <button class="button_addToCard" onclick="addToCart({{ $data->id }})">Add to Cart</button>
+                            <!-- Tombol Buy Now -->
+                            <a href="{{ route('checkout.form') }}" class="button_buyNow">Buy Now</a>
+                        @else
+                            <!-- Jika pengguna belum login -->
+                            <button class="button_addToCard" onclick="showLoginNotification()">Add to Cart</button>
+                            <a href="{{ route('login') }}" class="button_buyNow">Buy Now</a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Notifikasi Cart -->
-    <div id="cart-notification" style="display:none;"></div>
-</main>
+        <!-- Notifikasi Popup -->
+        <div id="cart-notification"></div>
+    </main>
 
-<!-- JavaScript -->
-<script>
-    // Menampilkan notifikasi jika pengguna belum login
-    function showLoginNotification() {
-        const notification = document.getElementById('cart-notification');
-        notification.style.display = 'block'; // Menampilkan notifikasi
-        notification.innerHTML = `
-            <div class="alert alert-warning">
-                <strong>Warning!</strong> You need to log in to add items to the cart.
-            </div>
-        `;
-        // Menyembunyikan notifikasi setelah beberapa detik
-        setTimeout(() => {
-            notification.style.display = 'none';
-        }, 5000); // Menyembunyikan setelah 5 detik
-    }
-
-    // Fungsi untuk menambah barang ke keranjang (masih perlu implementasi)
-    function addToCart(productId) {
-        // Implementasikan fungsi untuk menambahkan barang ke keranjang
-        console.log('Item added to cart', productId);
-    }
-</script>
-
-
+    <!-- JavaScript -->
     <script>
-        // Fungsi untuk menampilkan notifikasi
-        function showCartNotification(message) {
-            var notification = document.getElementById('cart-notification');
-            notification.innerText = message;
-            notification.style.display = 'block';
-
-            setTimeout(function() {
-                notification.style.display = 'none';
-            }, 3000); // Notifikasi akan menghilang setelah 3 detik
+        // Menampilkan notifikasi untuk pengguna yang belum login
+        function showLoginNotification() {
+            showCartNotification("Warning! You need to log in to add items to the cart.", 'red');
         }
 
-        // Fungsi untuk menambahkan produk ke keranjang dan menampilkan notifikasi
+        // Fungsi untuk menampilkan notifikasi
+        function showCartNotification(message, bgColor = '#28a745') {
+            var notification = document.getElementById('cart-notification');
+            notification.innerText = message;
+            notification.style.backgroundColor = bgColor;
+            notification.style.display = 'block';
+
+            // Sembunyikan notifikasi setelah 3 detik
+            setTimeout(function() {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Fungsi untuk menambahkan produk ke keranjang
         function addToCart(productId) {
             fetch(`/tambah_keranjang/${productId}`, {
                 method: 'GET',
@@ -219,10 +222,13 @@
                 if (data.success) {
                     showCartNotification(data.success);
                 } else {
-                    showCartNotification(data.error);
+                    showCartNotification(data.error, 'red');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                showCartNotification('Something went wrong. Please try again.', 'red');
+            });
         }
     </script>
 @endsection

@@ -25,7 +25,8 @@ class Order extends Model
         'alamat_pembeli',
         'total_harga',
         'status',
-        'items',  // Tambahkan kolom items ke dalam $fillable
+        'items',
+        'bukti_pembayaran',  // Tambahkan kolom items ke dalam $fillable
     ];
 }
 

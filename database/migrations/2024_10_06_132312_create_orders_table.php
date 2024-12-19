@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamp('tanggal_pembelian')->useCurrent();
             $table->decimal('total_harga', 10, 2);
             $table->string('status', 20);
-            $table->string('bukti_pembayaran', 255)->nullable(); 
-            $table->decimal('ongkir', 10, 2)->nullable();
+            $table->string('bukti_pembayaran', 255)->nullable();
+            // $table->decimal('ongkir', 10, 2)->default();
             $table->timestamps();
         });
     }

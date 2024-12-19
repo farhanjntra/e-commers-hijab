@@ -24,6 +24,6 @@ class Keranjang extends Model
     // Relasi ke Barang
     public function barang()
     {
-        return $this->belongsTo(Barang::class, 'produk_id');
+        return $this->belongsTo(Barang::class, 'produk_id','id');
     }
 }

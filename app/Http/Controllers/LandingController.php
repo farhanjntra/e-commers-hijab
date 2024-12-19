@@ -9,10 +9,21 @@ use Illuminate\Http\Request;
 class LandingController extends Controller
 {
     // Halaman Admin
-    public function admin()
-    {
-        return view('admin.layout.index');
-    }
+   // Controller: LandingController.php
+   public function admin()
+   {
+       // Ambil data dari database
+       $totalOrders = \App\Models\Order::count();
+       $totalBarang = \App\Models\Barang::count();
+       $totalUsers = \App\Models\User::count();
+
+       return view('admin.dashboard', [
+           'totalOrders' => $totalOrders,
+           'totalBarang' => $totalBarang,
+           'totalUsers' => $totalUsers
+       ]);
+   }
+
 
     // Halaman Beranda
     public function index()
